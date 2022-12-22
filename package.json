@@ -1,0 +1,11 @@
+{
+  "name": "pivot-table-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Fabian Siatama <fas0980@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "sequelize": "^6.28.0"
+  }
+}
