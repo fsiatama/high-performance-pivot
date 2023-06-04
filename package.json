@@ -1,9 +1,13 @@
 {
   "name": "high-performance-pivot",
-  "version": "1.0.3",
-  "main": "index.ts",
+  "version": "1.0.4",
   "author": "Fabian Siatama <fas0980@gmail.com>",
   "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "sequelize": "^6.32.0",
     "sqlite3": "^5.1.6"
@@ -11,5 +15,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fsiatama/high-performance-pivot.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
   }
 }
