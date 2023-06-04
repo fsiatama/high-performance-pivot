@@ -1,6 +1,6 @@
-# PivotTableJS
+# high-performance-pivot
 
-PivotTableJS is a dynamic pivot table library for Node.js. This library is designed to generate SQL-based pivot tables from JavaScript arrays of objects.
+high-performance-pivot is a dynamic pivot table library for Node.js. This library is designed to generate SQL-based pivot tables from JavaScript arrays of objects.
 
 ## Features
 - SQL-based pivot table generation
@@ -10,14 +10,13 @@ PivotTableJS is a dynamic pivot table library for Node.js. This library is desig
 
 ## Efficiency
 
-PivotTableJS leverages the power of SQL for processing data, which makes it more efficient than traditional JavaScript-only solutions. Unlike other pivot table libraries that use JavaScript's reduce function or loop constructs to process data, PivotTableJS uses SQL's built-in aggregation and grouping capabilities for data transformation. This approach ensures higher performance, especially when dealing with large data sets.
+`high-performance-pivot` leverages the power of SQL for processing data, which makes it more efficient than traditional JavaScript-only solutions. Unlike other pivot table libraries that use JavaScript's reduce function or loop constructs to process data, `high-performance-pivot` uses SQL's built-in aggregation and grouping capabilities for data transformation. This approach ensures higher performance, especially when dealing with large data sets.
 
 ## Installation
 
 ```bash
-$ npm install pivot-table-js
+$ npm install high-performance-pivot
 ```
-
 
 ## Usage/Examples
 
@@ -102,7 +101,7 @@ the initial data should be an array of simple javascript objects, example:
 this configuration get a only one row with sum of key "amount" by each value in the key "month"
 
 ```javascript
-import pivotTable, { IPivotConf } from 'pivot-table-js';
+import pivotTable, { IPivotConf } from 'high-performance-pivot';
 
 const data = [
   // Your data here
@@ -116,8 +115,8 @@ const pivotConf: IPivotConf = {
   aggregation: ['amount'],
 };
 
-const pivotTable = new PivotTable();
-const pivotData = await pivotTable.getPivotData(data, pivotConfig);
+
+const pivotData = await PivotTable.getPivotData(data, pivotConfig);
 
 ```
 
@@ -151,7 +150,7 @@ The second configuration will further break down the first configuration by subc
 
 Lastly, the third configuration groups the data by contractor, giving us an understanding of the total amount spent on different contractors on a monthly basis, split by subcategory.
 
-With PivotTableJS, we can efficiently perform these three different aggregations in one go using the `getPivotDataFromMultipleConfigurations` method:
+With `high-performance-pivot`, we can efficiently perform these three different aggregations in one go using the `getPivotDataFromMultipleConfigurations` method:
 
 ```javascript
 const configs: IPivotConf[] = [
@@ -287,8 +286,7 @@ const pivotConf: IPivotConf = {
   sortBy: ['origDate'],
 };
 
-const pivotTable = new PivotTable();
-const pivotData = await pivotTable.getPivotData(data, pivotConfig);
+const pivotData = await PivotTable.getPivotData(data, pivotConfig);
 ```
 
 output:

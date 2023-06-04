@@ -1,7 +1,7 @@
 {
-  "name": "pivot-table-js",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "high-performance-pivot",
+  "version": "1.0.1",
+  "main": "index.ts",
   "author": "Fabian Siatama <fas0980@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -10,6 +10,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fsiatama/PivotTableJS.git"
+    "url": "git+https://github.com/fsiatama/high-performance-pivot.git"
   }
 }
