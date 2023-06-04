@@ -101,7 +101,7 @@ the initial data should be an array of simple javascript objects, example:
 this configuration get a only one row with sum of key "amount" by each value in the key "month"
 
 ```javascript
-import pivotTable, { IPivotConf } from 'high-performance-pivot';
+import PivotTable, { IPivotConf } from 'high-performance-pivot';
 
 const data = [
   // Your data here
