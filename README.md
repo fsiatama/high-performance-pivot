@@ -1,6 +1,23 @@
-# Pivot Table
+# PivotTableJS
 
-This utility can help you to make a grouped values that aggregates the individual items of a more extensive data rows
+PivotTableJS is a dynamic pivot table library for Node.js. This library is designed to generate SQL-based pivot tables from JavaScript arrays of objects.
+
+## Features
+- SQL-based pivot table generation
+- Works with in-memory SQLite database
+- Supports multiple pivot table configurations
+- Dynamic table column definitions
+
+## Efficiency
+
+PivotTableJS leverages the power of SQL for processing data, which makes it more efficient than traditional JavaScript-only solutions. Unlike other pivot table libraries that use JavaScript's reduce function or loop constructs to process data, PivotTableJS uses SQL's built-in aggregation and grouping capabilities for data transformation. This approach ensures higher performance, especially when dealing with large data sets.
+
+## Installation
+
+```bash
+$ npm install pivot-table-js
+```
+
 
 ## Usage/Examples
 
@@ -85,26 +102,23 @@ the initial data should be an array of simple javascript objects, example:
 this configuration get a only one row with sum of key "amount" by each value in the key "month"
 
 ```javascript
-import pivotTable, { IPivotConf } from '../../../lib/utils/PivotTable';
+import pivotTable, { IPivotConf } from 'pivot-table-js';
 
-class ContractPaymentsController {
-  async getTotalContractsByMonth(data: ContractFlow[]) {
-    const pivotConf: IPivotConf = {
-      pivotColumn: {
-        caseColumn: 'month',
-        sumColumn: 'amount',
-      },
-      aggregation: ['amount'],
-    };
+const data = [
+  // Your data here
+];
 
-    const totalDataByMonth: ValueByMonth[] = await pivotTable.getPivotData(
-      data,
-      pivotConf,
-    );
+const pivotConf: IPivotConf = {
+  pivotColumn: {
+    caseColumn: 'month',
+    sumColumn: 'amount',
+  },
+  aggregation: ['amount'],
+};
 
-    return totalDataByMonth[0];
-  }
-}
+const pivotTable = new PivotTable();
+const pivotData = await pivotTable.getPivotData(data, pivotConfig);
+
 ```
 
 output:
@@ -129,55 +143,68 @@ output:
 
 ### Example 2:
 
-this example mix three configurations to get a grouped data by categories, similar to cash flow or contracts flow:
+In this example we have defined three different pivot configurations to showcase different aggregations and grouping scenarios.
+
+In the first configuration, we want to create a pivot table with monthly amounts, grouped by category. This will give us an understanding of the total amount spent on different categories on a monthly basis.
+
+The second configuration will further break down the first configuration by subcategory. This allows us to analyze the monthly amount spent on different subcategories of a particular category.
+
+Lastly, the third configuration groups the data by contractor, giving us an understanding of the total amount spent on different contractors on a monthly basis, split by subcategory.
+
+With PivotTableJS, we can efficiently perform these three different aggregations in one go using the `getPivotDataFromMultipleConfigurations` method:
 
 ```javascript
+const configs: IPivotConf[] = [
+  {
+    pivotColumn: {
+      caseColumn: 'month',
+      sumColumn: 'amount',
+    },
+    aggregation: ['amount', 'amountBudget', 'amountProjected'],
+    groupBy: [
+      'null AS parentId',
+      '"categoryId_" || CAST(categoryId as INT) AS id',
+      'category AS name',
+    ],
+  },
+  {
+    pivotColumn: {
+      caseColumn: 'month',
+      sumColumn: 'amount',
+    },
+    aggregation: ['amount', 'amountBudget', 'amountProjected'],
+    groupBy: [
+      '"categoryId_" || CAST(categoryId as INT) AS parentId',
+      '"subcategoryId_" || CAST(subcategoryId as INT) AS id',
+      'subcategory AS name',
+    ],
+  },
+  {
+    pivotColumn: {
+      caseColumn: 'month',
+      sumColumn: 'amount',
+    },
+    aggregation: ['amount', 'amountBudget', 'amountProjected'],
+    groupBy: [
+      '"subcategoryId_" || CAST(subcategoryId as INT) AS parentId',
+      '"contractId_" || CAST(id as INT) AS id',
+      'contractorName AS name',
+    ],
+  },
+];
 
-async getContractsFlow (data: ContractFlow[]) {
-  let pivotConf = {
-      pivotColumn: {
-        caseColumn: 'month',
-        sumColumn: 'amount',
-      },
-      aggregation: ['amount', 'amountBudget', 'amountProjected'],
-      groupBy: ['null AS parentId', '"categoryId_" || CAST(categoryId as INT) AS id', 'category AS name'],
-    };
+try {
+  const allData = await PivotTable.getPivotDataFromMultipleConfigurations(
+    data,
+    configs,
+  );
 
-    const categoryData = await pivotTable.getPivotData(data, pivotConf);
-
-    pivotConf = {
-      pivotColumn: {
-        caseColumn: 'month',
-        sumColumn: 'amount',
-      },
-      aggregation: ['amount', 'amountBudget', 'amountProjected'],
-      groupBy: [
-        '"categoryId_" || CAST(categoryId as INT) AS parentId',
-        '"subcategoryId_" || CAST(subcategoryId as INT) AS id',
-        'subcategory AS name',
-      ],
-    };
-
-    const subcategoryData = await pivotTable.getPivotData(data, pivotConf);
-
-    pivotConf = {
-      pivotColumn: {
-        caseColumn: 'month',
-        sumColumn: 'amount',
-      },
-      aggregation: ['amount', 'amountBudget', 'amountProjected'],
-      groupBy: [
-        '"subcategoryId_" || CAST(subcategoryId as INT) AS parentId',
-        '"contractId_" || CAST(id as INT) AS id',
-        'contractTitle AS name',
-      ],
-    };
-
-    const contractData = await pivotTable.getPivotData(data, pivotConf);
-
-    return [...categoryData, ...subcategoryData, ...contractData];
+  return {
+    result: allData.flat(),
+  };
+} catch (error) {
+  throw error;
 }
-
 ```
 
 output:
@@ -246,25 +273,22 @@ output:
 this example shows how you can agrupate values by custom identifier and shows them as a columns
 
 ```javascript
-async getResumeByContract(data: ContractFlow[]) {
-
-  const pivotConf = {
-    pivotColumn: {
-      caseColumn: 'type',
-      sumColumn: 'amountBudget',
-      values: {
-        quota: ['PC', 'PP'],
-        extra: ['PX'],
-      },
+const pivotConf: IPivotConf = {
+  pivotColumn: {
+    caseColumn: 'type',
+    sumColumn: 'amountBudget',
+    values: {
+      quota: ['PC', 'PP'],
+      extra: ['PX'],
     },
-    aggregation: ['amount', 'amountProjected', 'amountBudget'],
-    groupBy: ['month', 'state'],
-    sortBy: ['origDate'],
-  };
+  },
+  aggregation: ['amount', 'amountProjected', 'amountBudget'],
+  groupBy: ['month', 'state'],
+  sortBy: ['origDate'],
+};
 
-  return pivotTable.getPivotData(scheduleData, pivotConf);
-
-}
+const pivotTable = new PivotTable();
+const pivotData = await pivotTable.getPivotData(data, pivotConfig);
 ```
 
 output:
@@ -323,3 +347,21 @@ output:
   },
 ];
 ```
+
+## Documentation
+
+Visit [`this GitHub repository`](https://github.com/fsiatama/test-pivot-table-js.git) for more detailed documentation and usage examples. This repository also includes a NestJS application that tests this library.
+
+## Notes
+
+- This library is intended for server-side (backend) usage.
+- Although this library uses an in-memory SQLite database for processing, it doesn't handle database connections to your main database.
+
+## Author
+This library is developed and maintained by Fabian Siatama. Feel free to reach out on [`GitHub`](https://github.com/fsiatama) for any questions, suggestions, or if you want to contribute to the project.
+
+## Contributing
+If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
+
+## License
+This project is licensed under the MIT License
