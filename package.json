@@ -1,6 +1,6 @@
 {
   "name": "high-performance-pivot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.ts",
   "author": "Fabian Siatama <fas0980@gmail.com>",
   "license": "MIT",
